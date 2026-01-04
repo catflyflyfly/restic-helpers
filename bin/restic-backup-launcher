@@ -1,0 +1,8 @@
+#!/bin/zsh
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+export RESTIC_HELPERS_DIR="$(dirname "$SCRIPT_DIR")"
+
+source "$RESTIC_HELPERS_DIR/bin/functions.sh"
+configure_restic_repo "$1"
+restic_backup

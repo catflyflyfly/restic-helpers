@@ -1,0 +1,83 @@
+# Any directory with "cache" in name
+**/*cache*/
+**/*Cache*/
+
+# Build artifacts & compilation (glob patterns for project dirs)
+**/target/
+**/build/
+**/dist/
+**/out/
+**/bin/
+**/obj/
+**/*.class
+**/*.pyc
+**/__pycache__/
+
+# Dependencies - JavaScript/Node
+**/node_modules/
+.npm/
+.yarn/
+**/.pnp.*
+
+# Dependencies - Python
+**/venv/
+**/.venv/
+**/env/
+**/.env/
+**/*.egg-info/
+**/.pytest_cache/
+**/.tox/
+
+# Dependencies - Java/Kotlin
+.gradle/
+.m2/
+**/gradle/
+
+# Dependencies - Ruby
+**/.bundle/
+**/vendor/bundle/
+
+# Dependencies - Haskell
+**/.stack-work/
+**/dist-newstyle/
+.cabal/
+.ghcup/
+
+# Language runtimes & version managers
+.asdf/
+.nvm/
+.rbenv/
+.pyenv/
+.rustup/
+.sdkman/
+Library/Android/
+
+# AI Models
+.ollama/models/
+
+# Steam & Games
+Library/Application Support/Steam/steamapps/
+
+# Downloads
+Downloads/
+
+# Cloud Sync (already backed up)
+Library/Mobile Documents/
+Library/CloudStorage/
+Google Drive/
+Synology Drive/
+
+# macOS specific
+.DS_Store
+**/.DS_Store
+.Spotlight-V100
+.Trash
+.fseventsd
+.TemporaryItems
+
+# Temporary files
+**/*.tmp
+**/*.swp
+**/*.swo
+**/*~
+**/.*.swp
