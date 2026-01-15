@@ -10,11 +10,6 @@
 #   init_restic_repo my_macbook
 #   init_restic_repo work_laptop
 init_restic_repo() {
-  if [ -z "$RESTIC_HELPERS_DIR" ]; then
-    echo "Error: RESTIC_HELPERS_DIR not set"
-    return 1
-  fi
-  
   if [ -z "$1" ]; then
     echo "Error: REPO name required"
     echo "Usage: init_restic_repo REPO"
@@ -22,7 +17,7 @@ init_restic_repo() {
   fi
   
   local REPO="$1"
-  local RESTIC_REPOS_DIR="$RESTIC_HELPERS_DIR/repos"
+  local RESTIC_REPOS_DIR="$HOME/.config/restic/repositories"
   local REPO_DIR="$RESTIC_REPOS_DIR/$REPO"
   
   if [ -d "$REPO_DIR" ]; then
@@ -69,13 +64,13 @@ configure_restic_repo() {
   fi
   
   local REPO="$1"
-  local RESTIC_REPOS_DIR="$RESTIC_HELPERS_DIR/repos"
+  local RESTIC_REPOS_DIR="$HOME/.config/restic/repositories"
   local REPO_DIR="$RESTIC_REPOS_DIR/$REPO"
   local CORE_REPO_DIR="$RESTIC_REPOS_DIR/core"
   
   export RESTIC_REPOSITORY_FILE="$REPO_DIR/name.txt"
   export RESTIC_PASSWORD_FILE="$REPO_DIR/password.txt"
-  export X_RESTIC_CORE_EXCLUDE_FILE="$CORE_REPO_DIR/exclude.txt"
+  export X_RESTIC_CORE_EXCLUDE_FILE="$RESTIC_HELPERS_DIR/core.exclude.txt"
   export X_RESTIC_EXCLUDE_FILE="$REPO_DIR/exclude.txt"
   export X_RESTIC_PATHS_FILE="$REPO_DIR/paths.txt"
   

@@ -1,6 +1,0 @@
-# Ignore everything in repos/
-repos/*
-
-# Except core/exclude.txt
-!repos/core/
-!repos/core/exclude.txt
