@@ -12,6 +12,7 @@
 **/*.class
 **/*.pyc
 **/__pycache__/
+**/tmp/
 
 # Dependencies - JavaScript/Node
 **/node_modules/
@@ -49,6 +50,7 @@
 .rbenv/
 .pyenv/
 .rustup/
+.cargo/registry/
 .sdkman/
 Library/Android/
 
@@ -60,6 +62,17 @@ Library/Application Support/Steam/steamapps/
 
 # Downloads
 Downloads/
+
+# Stupidly Huge Application Support Dir
+Library/pnpm
+Library/Roblox
+Library/Application\ Support/FileProvider
+Library/Application\ Support/iTerm2
+Library/Application\ Support/Battle.net
+Library/Application\ Support/Paradox\ Interactive
+Library/Application\ Support/TorBrowser-Data
+Library/Application\ Support/Microsoft
+Library/Application\ Support/zoom.us
 
 # Cloud Sync (already backed up)
 Library/Mobile Documents/

@@ -73,36 +73,13 @@ configure_restic_repo() {
   local REPO_DIR="$RESTIC_REPOS_DIR/$REPO"
   local CORE_REPO_DIR="$RESTIC_REPOS_DIR/core"
   
+  export RESTIC_REPOSITORY_FILE="$REPO_DIR/name.txt"
+  export RESTIC_PASSWORD_FILE="$REPO_DIR/password.txt"
   export X_RESTIC_CORE_EXCLUDE_FILE="$CORE_REPO_DIR/exclude.txt"
-  export X_RESTIC_REPOSITORY_FILE="$REPO_DIR/name.txt"
-  export X_RESTIC_PASSWORD_FILE="$REPO_DIR/password.txt"
   export X_RESTIC_EXCLUDE_FILE="$REPO_DIR/exclude.txt"
   export X_RESTIC_PATHS_FILE="$REPO_DIR/paths.txt"
   
-  echo "Configured restic repository: $(cat "$X_RESTIC_REPOSITORY_FILE")"
-}
-
-# Export standard restic environment variables from custom X_RESTIC_* variables
-# for easier command-line usage and debugging.
-#
-# Usage: export_restic_env
-# Prerequisites: Must call configure_restic_repo first
-# Examples:
-#   configure_restic_repo catbook
-#   export_restic_env
-#   restic snapshots  # Now uses standard env vars
-export_restic_env() {
-  if [ -z "$X_RESTIC_REPOSITORY_FILE" ]; then
-    echo "Error: No repository loaded. Call configure_restic_repo first."
-    return 1
-  fi
-  
-  export RESTIC_REPOSITORY="$(cat "$X_RESTIC_REPOSITORY_FILE")"
-  export RESTIC_PASSWORD_FILE="$X_RESTIC_PASSWORD_FILE"
-  
-  echo "Standard restic environment variables exported:"
-  echo "  RESTIC_REPOSITORY=$RESTIC_REPOSITORY"
-  echo "  RESTIC_PASSWORD_FILE=$RESTIC_PASSWORD_FILE"
+  echo "Configured restic repository: $(cat "$RESTIC_REPOSITORY_FILE")"
 }
 
 # Perform restic backup and prune old snapshots according to retention policy.
@@ -113,21 +90,52 @@ export_restic_env() {
 #   configure_restic_repo catbook
 #   restic_backup
 restic_backup() {
-  if [ -z "$X_RESTIC_REPOSITORY_FILE" ]; then
+  if [ -z "$RESTIC_REPOSITORY_FILE" ]; then
     echo "Error: No repository configured. Call configure_restic_repo first."
     return 1
   fi
-  
+
+  # Run backup - ignore stdout, stderr to temp file
   restic backup \
-    --repository-file="$X_RESTIC_REPOSITORY_FILE" \
-    --password-file="$X_RESTIC_PASSWORD_FILE" \
+    --repository-file="$RESTIC_REPOSITORY_FILE" \
+    --password-file="$RESTIC_PASSWORD_FILE" \
     --files-from="$X_RESTIC_PATHS_FILE" \
     --exclude-file="$X_RESTIC_CORE_EXCLUDE_FILE" \
-    --exclude-file="$X_RESTIC_EXCLUDE_FILE"
+    --exclude-file="$X_RESTIC_EXCLUDE_FILE" \
+    --exclude-caches \
+    2> >(tee /tmp/restic-backup-error.txt >&2)
+
+  EXIT_CODE=$?
+
+  # Send notification
+  if [ $EXIT_CODE -eq 0 ]; then
+    BOT_TOKEN="$TELEGRAM_INFO_BOT_TOKEN"
+    MSG="✅ Backup succeeded"
+  else
+    BOT_TOKEN="$TELEGRAM_ERROR_BOT_TOKEN"
+    ERROR=$(cat /tmp/restic-backup-error.txt)
+    MSG="❌ Backup failed\n$ERROR"
+  fi
+
+  # Skip if telegram not configured
+  if [ -n "$TELEGRAM_CHAT_ID" ] && [ -n "$BOT_TOKEN" ]; then
+    jq -n \
+      --arg chat_id "$TELEGRAM_CHAT_ID" \
+      --arg msg "$MSG" \
+      '{chat_id: $chat_id, text: $msg}' | \
+    curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+      -H "Content-Type: application/json" \
+      -d @-
+  fi
+
+  # Exit only if failed; do not proceed to prune
+  if [ $EXIT_CODE -ne 0 ]; then
+    return $EXIT_CODE
+  fi
   
   restic forget \
-    --repository-file="$X_RESTIC_REPOSITORY_FILE" \
-    --password-file="$X_RESTIC_PASSWORD_FILE" \
+    --repository-file="$RESTIC_REPOSITORY_FILE" \
+    --password-file="$RESTIC_PASSWORD_FILE" \
     --keep-daily 7 \
     --keep-weekly 4 \
     --keep-monthly 6 \
