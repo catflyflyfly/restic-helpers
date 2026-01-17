@@ -1,14 +1,17 @@
 # restic-helpers
 
-Manage restic backups with scheduling and Telegram notifications.
+A simple python restic wrapper for personal use.
 
-## Features
+# Features
 
-- Initialize and manage multiple backup repositories
-- Automated scheduling (macOS launchd)
-- Telegram notifications (success/failure)
-- Retention policy management
-- Cross-repository configuration
+- **Modern Python CLI** - Clean wrapper around restic commands
+- **Single script installation** - No complex setup
+- **Config-centric** - Plain text config for restic options, separate secrets file
+- **Transparency** - Dry-run and verbose modes show exact commands before execution
+- **Monitoring** - Built-in healthchecks.io and Telegram notifications
+- **macOS scheduling** - Helpers for launchd integration
+- **Reliable** - Configurable exponential backoff retries
+- **Safe by default** - Blacklist-centric excludes (better to backup too much than miss critical files)
 
 ## Prerequisites
 
@@ -65,7 +68,7 @@ rm -f ~/.local/bin/restic-helpers
 
 See `restic-helpers --help` for the command help text.
 
-### Initialize Repository
+### Workflow
 ```bash
 # Initialize repo configs
 restic-helpers init my_laptop
@@ -80,73 +83,22 @@ export | grep "^RESTIC"
 #   configure ~/.ssh/config, add IdentityFile.
 restic init
 # Initialize first backup...
+# Note: Enable Full Disk Access for terminal app to avoid access errors.
+#   1. Go to System Settings, "Privacy & Security" -> "Full Disk Access".
+#   2. Click add. Find your terminal app.
 restic-helpers backup my_laptop
-```
-
-Edit configuration files:
-- `~/.config/restic-helpers/repositories/my_laptop/name.txt` - Repository URL
-- `~/.config/restic-helpers/repositories/my_laptop/password.txt` - Password
-- `~/.config/restic-helpers/repositories/my_laptop/paths.txt` - Paths to backup
-- `~/.config/restic-helpers/repositories/my_laptop/exclude.txt` - Custom exclusions
-
-### Configure and Backup
-```bash
-# Load repository config
-restic-helpers configure my_laptop
-
-# Run backup
-restic-helpers backup
 ```
 
 ### Schedule Automated Backups
 ```bash
-# Schedule daily at 2:00 AM
-restic-helpers schedule my_laptop
-
-# Custom time (14:30)
-restic-helpers schedule my_laptop --hour 14 --minute 30
-
-# Remove schedule
+# Note: Enable Full Disk Access for python to avoid access errors.
+source ~/.local/share/restic-helpers/venv/bin/activate
+which python | pbcopy
+#   1. Go to System Settings, "Privacy & Security" -> "Full Disk Access"
+#   2. Click add. Cmd-Shift-G, then paste from clipboard. Click Open.
+restic-helpers schedule my_laptop "0 2 * * *" # 02.00 GMT+7
 restic-helpers unschedule my_laptop
 ```
-
-Optional: use same token for both if you prefer.
-
-## Commands
-```bash
-restic-helpers init <repo>              # Initialize repository
-restic-helpers configure <repo>         # Load configuration
-restic-helpers backup                   # Run backup
-restic-helpers schedule <repo> [opts]   # Schedule backup
-restic-helpers unschedule <repo>        # Remove schedule
-restic-helpers --help                   # Show help
-```
-
-## Directory Structure
-```
-~/.config/restic/repositories/
-  └── my_laptop/
-      ├── name.txt       # Repository URL
-      ├── password.txt   # Repository password
-      ├── paths.txt      # Paths to backup
-      └── exclude.txt    # Custom exclusions
-
-~/.local/share/restic-helpers/
-  ├── venv/            # Python virtual environment
-  ├── restic_helpers.py
-  ├── requirements.txt
-  └── core.exclude.txt
-
-~/.local/bin/
-  └── restic-helpers   # Command
-```
-
-## Retention Policy
-
-Default retention (configurable in code):
-- Daily: 7 snapshots
-- Weekly: 4 snapshots
-- Monthly: 6 snapshots
 
 ## Development
 ```bash
@@ -155,12 +107,6 @@ git clone https://github.com/catfly/restic-helpers.git
 cd restic-helpers
 
 # Install
-./install.sh
-
-# Make changes
-vim restic_helpers.py
-
-# Reinstall
 ./install.sh
 
 # Test
