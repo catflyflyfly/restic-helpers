@@ -52,7 +52,10 @@
 .rustup/
 .cargo/registry/
 .sdkman/
+.android/
+.konan/
 Library/Android/
+fvm/
 
 # AI Models
 .ollama/models/
@@ -66,6 +69,8 @@ Downloads/
 # Stupidly Huge Application Support Dir
 Library/pnpm
 Library/Roblox
+Library/Google/GoogleSoftwareUpdate
+
 Library/Application\ Support/FileProvider
 Library/Application\ Support/iTerm2
 Library/Application\ Support/Battle.net
@@ -73,6 +78,19 @@ Library/Application\ Support/Paradox\ Interactive
 Library/Application\ Support/TorBrowser-Data
 Library/Application\ Support/Microsoft
 Library/Application\ Support/zoom.us
+Library/Application\ Support/LogiOptionsPlus
+
+Library/Containers/com.docker.docker
+Library/Containers/com.apple.Safari
+Library/Containers/com.google.Chrome
+
+Library/Developer/Xcode
+
+Library/Group\ Containers/EQHXZ8M8AV.group.com.google.drivefs
+Library/Group\ Containers/group.com.apple.secure-control-center-preferences
+Library/HTTPStorages
+
+Library/Logs
 
 # Cloud Sync (already backed up)
 Library/Mobile Documents/
