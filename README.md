@@ -1,127 +1,172 @@
 # restic-helpers
 
-Personal shell functions and documentation for managing [restic](https://restic.net/) backups on macOS.
+Manage restic backups with scheduling and Telegram notifications.
 
-This repository serves as both a toolkit and a reference document - a way to automate backups while maintaining clear documentation of what's happening and why. Built primarily for personal use on macOS systems.
+## Features
+
+- Initialize and manage multiple backup repositories
+- Automated scheduling (macOS launchd)
+- Telegram notifications (success/failure)
+- Retention policy management
+- Cross-repository configuration
 
 ## Prerequisites
 
-- **restic** - Backup tool. Install via:
-
-  ```bash
-    brew install restic
-  ```
+- macOS (for scheduling; backup works on Linux)
+- Python 3.7+
+- restic installed (`brew install restic`)
 
 ## Installation
 
-Run this in terminal to update your `.zshrc`:
+This installation script is idempotent. You can update safely with this script.
 
+**One-line install (recommended):**
 ```bash
-echo 'export RESTIC_HELPERS_DIR="$HOME/restic-helpers"' >> ~/.zshrc
-echo '[ -f "$RESTIC_HELPERS_DIR/bin/functions.sh" ] && source "$RESTIC_HELPERS_DIR/bin/functions.sh"' >> ~/.zshrc
-source ~/.zshrc
+curl -fsSL https://raw.githubusercontent.com/catfly/restic-helpers/main/install.sh | bash
 ```
 
-## Configuration
-
-### 1. Initialize Repository Configuration
-
-Create a new repository configuration:
-
+**For development or customization:**
 ```bash
-init_restic_repo REPO_NAME
+# Clone repository
+git clone https://github.com/catfly/restic-helpers.git
+cd restic-helpers
+
+# Run installer (copies to ~/.local/share/restic-helpers)
+./install.sh
 ```
 
-Example:
+### Shell Setup
 
+After installation, add to `~/.zshrc`:
 ```bash
-init_restic_repo my_macbook
+export PATH="$HOME/.local/bin:$PATH"
 ```
 
-This creates a directory at `repos/REPO_NAME/` with template configuration files.
-
-### 2. Edit Configuration Files
-
-Fill in the generated files:
-
-- `name.txt` - Restic repository URL (e.g., `sftp:user@host:/path/to/backup`)
-- `password.txt` - Repository encryption password
-- `exclude.txt` - Repository-specific exclusion patterns
-- `paths.txt` - Paths to backup (one per line)
-
-For repository URL formats, see [Restic documentation](https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html).
-
-### 3. Initialize Restic Repository
-
-Configure and initialize the restic repository:
-
+(Optional) add to `~/.zshenv`:
 ```bash
-configure_restic_repo REPO_NAME
-restic init \
-  --repository-file="$X_RESTIC_REPOSITORY_FILE" \
-  --password-file="$X_RESTIC_PASSWORD_FILE"
+[ -f ~/.config/restic-helpers/env.sh ] && source ~/.config/restic-helpers/env.sh
+```
+
+Reload shell: `source ~/.zshrc`
+
+## Uninstall
+```bash
+curl -fsSL https://raw.githubusercontent.com/catfly/restic-helpers/main/uninstall.sh | bash
+```
+
+Or manually:
+```bash
+rm -rf ~/.local/share/restic-helpers
+rm -f ~/.local/bin/restic-helpers
+# Remove exports from ~/.zshrc
 ```
 
 ## Usage
 
-### Backup
+See `restic-helpers --help` for the command help text.
 
-Run a backup:
-
+### Initialize Repository
 ```bash
-configure_restic_repo REPO_NAME
-restic_backup
+# Initialize repo configs
+restic-helpers init my_laptop
+# Configure your repo parameters.
+cd ~/.config/restic-helpers
+# Use your repo. This will configure restic ENVs. 
+restic-helpers use my_laptop
+# Check if your ENVs are correct.
+export | grep "^RESTIC"
+# Actually initialize your restic repository
+# Note: Passwordless ssh is required for SFTP
+#   configure ~/.ssh/config, add IdentityFile.
+restic init
+# Initialize first backup...
+restic-helpers backup my_laptop
 ```
 
-### Export Environment Variables
+Edit configuration files:
+- `~/.config/restic-helpers/repositories/my_laptop/name.txt` - Repository URL
+- `~/.config/restic-helpers/repositories/my_laptop/password.txt` - Password
+- `~/.config/restic-helpers/repositories/my_laptop/paths.txt` - Paths to backup
+- `~/.config/restic-helpers/repositories/my_laptop/exclude.txt` - Custom exclusions
 
-For easier command-line usage:
-
+### Configure and Backup
 ```bash
-configure_restic_repo REPO_NAME
-export_restic_env
-restic snapshots  # Now uses standard restic env vars
+# Load repository config
+restic-helpers configure my_laptop
+
+# Run backup
+restic-helpers backup
 ```
 
-For more restic commands, see [Restic documentation](https://restic.readthedocs.io/en/stable/).
-
-## Automation
-
-### macOS (launchd)
-
-Schedule automated backups:
-
+### Schedule Automated Backups
 ```bash
-schedule_restic_backup_macos REPO_NAME [HOUR] [MINUTE]
+# Schedule daily at 2:00 AM
+restic-helpers schedule my_laptop
+
+# Custom time (14:30)
+restic-helpers schedule my_laptop --hour 14 --minute 30
+
+# Remove schedule
+restic-helpers unschedule my_laptop
 ```
 
-Example - run daily at 2:00 AM:
+Optional: use same token for both if you prefer.
 
+## Commands
 ```bash
-schedule_restic_backup_macos my_macbook
+restic-helpers init <repo>              # Initialize repository
+restic-helpers configure <repo>         # Load configuration
+restic-helpers backup                   # Run backup
+restic-helpers schedule <repo> [opts]   # Schedule backup
+restic-helpers unschedule <repo>        # Remove schedule
+restic-helpers --help                   # Show help
 ```
 
-Example - run daily at 2:30 PM:
+## Directory Structure
+```
+~/.config/restic/repositories/
+  └── my_laptop/
+      ├── name.txt       # Repository URL
+      ├── password.txt   # Repository password
+      ├── paths.txt      # Paths to backup
+      └── exclude.txt    # Custom exclusions
 
-```bash
-schedule_restic_backup_macos my_macbook 14 30
+~/.local/share/restic-helpers/
+  ├── venv/            # Python virtual environment
+  ├── restic_helpers.py
+  ├── requirements.txt
+  └── core.exclude.txt
+
+~/.local/bin/
+  └── restic-helpers   # Command
 ```
 
-### Unschedule
+## Retention Policy
 
-Remove scheduled backup:
+Default retention (configurable in code):
+- Daily: 7 snapshots
+- Weekly: 4 snapshots
+- Monthly: 6 snapshots
 
+## Development
 ```bash
-unschedule_restic_backup_macos REPO_NAME
+# Clone and install in development mode
+git clone https://github.com/catfly/restic-helpers.git
+cd restic-helpers
+
+# Install
+./install.sh
+
+# Make changes
+vim restic_helpers.py
+
+# Reinstall
+./install.sh
+
+# Test
+restic-helpers --help
 ```
-
-### Notes
-
-- Scheduled tasks only run when the Mac is awake and powered on
-- For reliable backups, keep your Mac plugged in during scheduled times
-- Logs are stored in `/tmp/restic-backup-REPO_NAME/`
-- For repository integrity checks, schedule them on your NAS instead (always-on, faster)
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+MIT
