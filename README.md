@@ -1,116 +1,116 @@
 # restic-helpers
 
-A simple python restic wrapper for personal use.
+A simple restic wrapper for personal use.
 
-# Features
+## Features
 
-- **Modern Python CLI** - Clean wrapper around restic commands
-- **Single script installation** - No complex setup
+- **Single binary** - No dependencies, just download and run
 - **Config-centric** - Plain text config for restic options, separate secrets file
 - **Transparency** - Dry-run and verbose modes show exact commands before execution
 - **Monitoring** - Built-in healthchecks.io and Telegram notifications
-- **macOS scheduling** - Helpers for launchd integration
+- **macOS scheduling** - Cron-to-launchd conversion for native scheduling
 - **Reliable** - Configurable exponential backoff retries
 - **Safe by default** - Blacklist-centric excludes (better to backup too much than miss critical files)
 
 ## Prerequisites
 
 - macOS (for scheduling; backup works on Linux)
-- Python 3.7+
-- restic installed (`brew install restic`)
+- restic installed (`brew install restic` or equivalent)
 
 ## Installation
 
-This installation script is idempotent. You can update safely with this script.
+Download the binary for your platform from [Releases](https://github.com/catfly/restic-helpers/releases).
 
-**One-line install (recommended):**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/catfly/restic-helpers/main/install.sh | bash
+# macOS (Apple Silicon)
+curl -LO https://github.com/catfly/restic-helpers/releases/latest/download/restic-helpers_darwin_arm64.tar.gz
+tar xzf restic-helpers_darwin_arm64.tar.gz
+
+# macOS (Intel)
+curl -LO https://github.com/catfly/restic-helpers/releases/latest/download/restic-helpers_darwin_amd64.tar.gz
+tar xzf restic-helpers_darwin_amd64.tar.gz
+
+# Linux (x86_64)
+curl -LO https://github.com/catfly/restic-helpers/releases/latest/download/restic-helpers_linux_amd64.tar.gz
+tar xzf restic-helpers_linux_amd64.tar.gz
+
+# Linux (ARM64)
+curl -LO https://github.com/catfly/restic-helpers/releases/latest/download/restic-helpers_linux_arm64.tar.gz
+tar xzf restic-helpers_linux_arm64.tar.gz
+
+# Move to PATH
+mv restic-helpers /usr/local/bin/
 ```
 
-**For development or customization:**
+Or build from source:
 ```bash
-# Clone repository
-git clone https://github.com/catfly/restic-helpers.git
-cd restic-helpers
-
-# Run installer (copies to ~/.local/share/restic-helpers)
-./install.sh
-```
-
-### Shell Setup
-
-After installation, add to `~/.zshrc`:
-```bash
-export PATH="$HOME/.local/bin:$PATH"
-```
-
-(Optional) add to `~/.zshenv`:
-```bash
-[ -f ~/.config/restic-helpers/env.sh ] && source ~/.config/restic-helpers/env.sh
-```
-
-Reload shell: `source ~/.zshrc`
-
-## Uninstall
-```bash
-curl -fsSL https://raw.githubusercontent.com/catfly/restic-helpers/main/uninstall.sh | bash
-```
-
-Or manually:
-```bash
-rm -rf ~/.local/share/restic-helpers
-rm -f ~/.local/bin/restic-helpers
-# Remove exports from ~/.zshrc
+go install github.com/catfly/restic-helpers/cmd/restic-helpers@latest
 ```
 
 ## Usage
 
-See `restic-helpers --help` for the command help text.
+See `restic-helpers --help` for all commands.
 
 ### Workflow
+
 ```bash
-# Initialize repo configs
+# Initialize repo config (creates ~/.config/restic-helpers/ and repo config files)
 restic-helpers init my_laptop
-# Configure your repo parameters.
-cd ~/.config/restic-helpers
-# Use your repo. This will configure restic ENVs. 
+
+# Edit your repo config
+cd ~/.config/restic-helpers/repositories/my_laptop
+# - name.txt: repository URL/path
+# - password.txt: repository password
+# - paths.txt: paths to backup
+# - exclude.txt: additional exclusion patterns
+# - healthcheck.txt: healthchecks.io URL (optional)
+
+# Set restic environment variables for this repo
 restic-helpers use my_laptop
-# Check if your ENVs are correct.
+
+# Verify environment
 export | grep "^RESTIC"
-# Actually initialize your restic repository
-# Note: Passwordless ssh is required for SFTP
-#   configure ~/.ssh/config, add IdentityFile.
+
+# Initialize the restic repository (first time only)
+# Note: For SFTP, configure passwordless SSH in ~/.ssh/config
 restic init
-# Initialize first backup...
-# Note: Enable Full Disk Access for terminal app to avoid access errors.
-#   1. Go to System Settings, "Privacy & Security" -> "Full Disk Access".
-#   2. Click add. Find your terminal app.
+
+# Run a backup
+# Note: On macOS, enable Full Disk Access for terminal app
+#   System Settings -> Privacy & Security -> Full Disk Access
 restic-helpers backup my_laptop
 ```
 
-### Schedule Automated Backups
+### Schedule Automated Backups (macOS)
+
 ```bash
-# Note: Enable Full Disk Access for python to avoid access errors.
-source ~/.local/share/restic-helpers/venv/bin/activate
-which python | pbcopy
-#   1. Go to System Settings, "Privacy & Security" -> "Full Disk Access"
-#   2. Click add. Cmd-Shift-G, then paste from clipboard. Click Open.
-restic-helpers schedule my_laptop "0 2 * * *" # 02.00 GMT+7
+# Schedule daily backup at 2am
+restic-helpers schedule my_laptop "0 2 * * *"
+
+# Remove schedule
 restic-helpers unschedule my_laptop
 ```
 
-## Development
-```bash
-# Clone and install in development mode
-git clone https://github.com/catfly/restic-helpers.git
-cd restic-helpers
+Note: For scheduled backups, enable Full Disk Access for the binary:
+1. System Settings -> Privacy & Security -> Full Disk Access
+2. Add `/usr/local/bin/restic-helpers`
 
-# Install
-./install.sh
+## Configuration
 
-# Test
-restic-helpers --help
+Config files are stored in `~/.config/restic-helpers/`:
+
+```
+~/.config/restic-helpers/
+├── config.toml          # Global settings (prune retention, retry, etc.)
+├── secret.toml          # Sensitive values (Telegram bot token)
+├── core.exclude.txt     # Common exclusion patterns
+└── repositories/
+    └── my_laptop/
+        ├── name.txt
+        ├── password.txt
+        ├── paths.txt
+        ├── exclude.txt
+        └── healthcheck.txt
 ```
 
 ## License

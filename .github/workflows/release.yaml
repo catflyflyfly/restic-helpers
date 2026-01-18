@@ -1,0 +1,42 @@
+# GitHub Actions workflow to build and release binaries
+# Triggered when you push a version tag like v1.0.0
+
+name: Release
+
+# When to run this workflow
+on:
+  push:
+    tags:
+      - "v*"  # Only run on tags starting with 'v' (e.g., v1.0.0, v0.2.1)
+
+# Permissions needed to create releases and upload assets
+permissions:
+  contents: write  # Required to create GitHub releases
+
+jobs:
+  release:
+    runs-on: ubuntu-latest  # Use GitHub's Linux runner
+
+    steps:
+      # Step 1: Check out your code
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history (needed for changelog generation)
+
+      # Step 2: Set up Go
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.25"  # Match your go.mod version
+
+      # Step 3: Run GoReleaser to build all binaries and create the release
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          version: latest
+          args: release --clean  # --clean removes previous build artifacts
+        env:
+          # GITHUB_TOKEN is automatically provided by GitHub Actions
+          # It's used to create the release and upload binaries
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

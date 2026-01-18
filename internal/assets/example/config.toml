@@ -1,0 +1,16 @@
+# restic-helpers configuration
+
+[telegram]
+enabled = false
+
+[prune]
+keep_daily = 7
+keep_weekly = 4
+keep_monthly = 6
+
+[retry]
+max_attempts = 3
+backoff_min = 5
+backoff_max = 300
+multiplier = 2
+exp_base = 2

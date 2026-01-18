@@ -1,0 +1,53 @@
+# GoReleaser config - builds and releases binaries when you push a git tag
+# Docs: https://goreleaser.com
+
+version: 2  # GoReleaser config version (not your app version)
+
+project_name: restic-helpers
+
+# Commands to run before building
+before:
+  hooks:
+    - go mod tidy  # Clean up go.mod/go.sum
+
+# Build configuration
+builds:
+  - main: ./cmd/restic-helpers  # Path to main package
+    binary: restic-helpers       # Output binary name
+    env:
+      - CGO_ENABLED=0  # Static binary, no C dependencies (important for portability)
+
+    # Target operating systems
+    goos:
+      - darwin  # macOS
+      - linux   # Linux (including Synology)
+
+    # Target architectures
+    goarch:
+      - amd64  # Intel/AMD 64-bit
+      - arm64  # Apple Silicon / ARM 64-bit
+
+# How to package the binaries
+archives:
+  - format: tar.gz  # Creates .tar.gz files
+    # Output filename pattern, e.g.: restic-helpers_1.0.0_linux_arm64.tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
+# Generate checksums file for verifying downloads
+checksum:
+  name_template: "checksums.txt"
+
+# Auto-generate changelog from git commits
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"   # Skip docs commits
+      - "^test:"   # Skip test commits
+      - "^chore:"  # Skip chore commits
+
+# GitHub release settings
+release:
+  github:
+    owner: catfly          # Your GitHub username
+    name: restic-helpers   # Repository name

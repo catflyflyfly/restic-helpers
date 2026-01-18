@@ -1,5 +1,8 @@
 *.egg-info/
 **/*cache*/
 .claude
-.envrc
 .vscode
+
+# Go build output
+bin/
+dist/
