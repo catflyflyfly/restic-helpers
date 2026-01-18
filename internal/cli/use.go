@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/catfly/restic-helpers/internal/config"
+	"github.com/catflyflyfly/restic-helpers/internal/config"
 	"github.com/spf13/cobra"
 )
 

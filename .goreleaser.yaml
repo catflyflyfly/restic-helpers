@@ -48,5 +48,5 @@ changelog:
 # GitHub release settings
 release:
   github:
-    owner: catfly          # Your GitHub username
+    owner: catflyflyfly    # Your GitHub username
     name: restic-helpers   # Repository name

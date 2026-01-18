@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/catfly/restic-helpers/internal/config"
+	"github.com/catflyflyfly/restic-helpers/internal/config"
 )
 
 var (

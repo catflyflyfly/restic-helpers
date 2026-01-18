@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/BurntSushi/toml"
-	"github.com/catfly/restic-helpers/internal/retry"
+	"github.com/catflyflyfly/restic-helpers/internal/retry"
 )
 
 const (

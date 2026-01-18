@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/catfly/restic-helpers/internal/cli"
+	"github.com/catflyflyfly/restic-helpers/internal/cli"
 )
 
 func main() {

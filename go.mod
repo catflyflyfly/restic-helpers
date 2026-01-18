@@ -1,4 +1,4 @@
-module github.com/catfly/restic-helpers
+module github.com/catflyflyfly/restic-helpers
 
 go 1.25
 

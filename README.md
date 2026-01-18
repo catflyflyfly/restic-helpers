@@ -19,23 +19,23 @@ A simple restic wrapper for personal use.
 
 ## Installation
 
-Download the binary for your platform from [Releases](https://github.com/catfly/restic-helpers/releases).
+Download the binary for your platform from [Releases](https://github.com/catflyflyfly/restic-helpers/releases).
 
 ```bash
 # macOS (Apple Silicon)
-curl -LO https://github.com/catfly/restic-helpers/releases/latest/download/restic-helpers_darwin_arm64.tar.gz
+curl -LO https://github.com/catflyflyfly/restic-helpers/releases/latest/download/restic-helpers_darwin_arm64.tar.gz
 tar xzf restic-helpers_darwin_arm64.tar.gz
 
 # macOS (Intel)
-curl -LO https://github.com/catfly/restic-helpers/releases/latest/download/restic-helpers_darwin_amd64.tar.gz
+curl -LO https://github.com/catflyflyfly/restic-helpers/releases/latest/download/restic-helpers_darwin_amd64.tar.gz
 tar xzf restic-helpers_darwin_amd64.tar.gz
 
 # Linux (x86_64)
-curl -LO https://github.com/catfly/restic-helpers/releases/latest/download/restic-helpers_linux_amd64.tar.gz
+curl -LO https://github.com/catflyflyfly/restic-helpers/releases/latest/download/restic-helpers_linux_amd64.tar.gz
 tar xzf restic-helpers_linux_amd64.tar.gz
 
 # Linux (ARM64)
-curl -LO https://github.com/catfly/restic-helpers/releases/latest/download/restic-helpers_linux_arm64.tar.gz
+curl -LO https://github.com/catflyflyfly/restic-helpers/releases/latest/download/restic-helpers_linux_arm64.tar.gz
 tar xzf restic-helpers_linux_arm64.tar.gz
 
 # Move to PATH
@@ -44,7 +44,7 @@ mv restic-helpers /usr/local/bin/
 
 Or build from source:
 ```bash
-go install github.com/catfly/restic-helpers/cmd/restic-helpers@latest
+go install github.com/catflyflyfly/restic-helpers/cmd/restic-helpers@latest
 ```
 
 ## Usage

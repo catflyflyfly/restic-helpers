@@ -7,8 +7,8 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"github.com/catfly/restic-helpers/internal/config"
-	"github.com/catfly/restic-helpers/internal/cron"
+	"github.com/catflyflyfly/restic-helpers/internal/config"
+	"github.com/catflyflyfly/restic-helpers/internal/cron"
 	"howett.net/plist"
 )
 

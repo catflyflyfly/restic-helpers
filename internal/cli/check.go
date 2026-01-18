@@ -6,8 +6,8 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/catfly/restic-helpers/internal/config"
-	"github.com/catfly/restic-helpers/internal/notify"
+	"github.com/catflyflyfly/restic-helpers/internal/config"
+	"github.com/catflyflyfly/restic-helpers/internal/notify"
 	"github.com/spf13/cobra"
 )
 

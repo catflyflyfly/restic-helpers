@@ -5,8 +5,8 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/catfly/restic-helpers/internal/config"
-	"github.com/catfly/restic-helpers/internal/launchd"
+	"github.com/catflyflyfly/restic-helpers/internal/config"
+	"github.com/catflyflyfly/restic-helpers/internal/launchd"
 	"github.com/spf13/cobra"
 )
 
