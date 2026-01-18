@@ -29,8 +29,7 @@ builds:
 
 # How to package the binaries
 archives:
-  - format: tar.gz  # Creates .tar.gz files
-    # Output filename pattern, e.g.: restic-helpers_1.0.0_linux_arm64.tar.gz
+  - formats: [tar.gz]
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
 
 # Generate checksums file for verifying downloads
