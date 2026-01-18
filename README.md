@@ -43,6 +43,7 @@ mv restic-helpers /usr/local/bin/
 ```
 
 Or build from source:
+
 ```bash
 go install github.com/catflyflyfly/restic-helpers/cmd/restic-helpers@latest
 ```
@@ -58,7 +59,7 @@ See `restic-helpers --help` for all commands.
 restic-helpers init my_laptop
 
 # Edit your repo config
-cd ~/.config/restic-helpers/repositories/my_laptop
+cd ~/.config/restic-helpers/repos/my_laptop
 # - name.txt: repository URL/path
 # - password.txt: repository password
 # - paths.txt: paths to backup
@@ -92,6 +93,7 @@ restic-helpers unschedule my_laptop
 ```
 
 Note: For scheduled backups, enable Full Disk Access for the binary:
+
 1. System Settings -> Privacy & Security -> Full Disk Access
 2. Add `/usr/local/bin/restic-helpers`
 
@@ -104,7 +106,7 @@ Config files are stored in `~/.config/restic-helpers/`:
 ├── config.toml          # Global settings (prune retention, retry, etc.)
 ├── secret.toml          # Sensitive values (Telegram bot token)
 ├── core.exclude.txt     # Common exclusion patterns
-└── repositories/
+└── repos/
     └── my_laptop/
         ├── name.txt
         ├── password.txt

@@ -83,7 +83,7 @@ func GetPaths() (*Paths, error) {
 	}
 
 	configDir := filepath.Join(homeDir, ".config", AppName)
-	reposDir := filepath.Join(configDir, "repositories")
+	reposDir := filepath.Join(configDir, "repos")
 
 	return &Paths{
 		ConfigDir: configDir,
