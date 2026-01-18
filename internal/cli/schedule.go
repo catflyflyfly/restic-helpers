@@ -34,12 +34,6 @@ func runSchedule(cmd *cobra.Command, args []string) error {
 	repoName := args[0]
 	cronExpr := args[1]
 
-	LogVerbose("Loading paths configuration")
-	paths, err := config.GetPaths()
-	if err != nil {
-		return fmt.Errorf("failed to get paths: %w", err)
-	}
-
 	LogVerbose("Loading repository config: %s", repoName)
 	if _, err := config.LoadRepo(repoName); err != nil {
 		return fmt.Errorf("failed to load repository config: %w", err)
@@ -69,11 +63,6 @@ func runSchedule(cmd *cobra.Command, args []string) error {
 		fmt.Printf("[dry-run] Would create launchd job at %s\n\n", plistPath)
 		fmt.Println(plistContent)
 		return nil
-	}
-
-	LogVerbose("Creating state directory: %s", paths.StateDir)
-	if err := os.MkdirAll(paths.StateDir, 0755); err != nil {
-		return fmt.Errorf("failed to create state directory: %w", err)
 	}
 
 	LogVerbose("Uninstalling existing job if present")

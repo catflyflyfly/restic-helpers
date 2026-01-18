@@ -90,6 +90,9 @@ func ensureBaseConfig(paths *config.Paths) error {
 		if _, err := os.Stat(paths.ConfigDir); os.IsNotExist(err) {
 			fmt.Printf("[dry-run] Would create directory: %s\n", paths.ConfigDir)
 		}
+		if _, err := os.Stat(paths.StateDir); os.IsNotExist(err) {
+			fmt.Printf("[dry-run] Would create directory: %s\n", paths.StateDir)
+		}
 		for filename := range baseFiles {
 			filePath := filepath.Join(paths.ConfigDir, filename)
 			if _, err := os.Stat(filePath); os.IsNotExist(err) {
@@ -102,6 +105,11 @@ func ensureBaseConfig(paths *config.Paths) error {
 	// Create config directory
 	if err := os.MkdirAll(paths.ConfigDir, 0700); err != nil {
 		return fmt.Errorf("failed to create config directory: %w", err)
+	}
+
+	// Create state directory
+	if err := os.MkdirAll(paths.StateDir, 0700); err != nil {
+		return fmt.Errorf("failed to create state directory: %w", err)
 	}
 
 	// Create base config files (skip if already exist)

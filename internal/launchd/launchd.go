@@ -53,7 +53,8 @@ func CreateJob(repoName string, cronExpr string, binaryPath string) (*Job, error
 		return nil, err
 	}
 
-	logPath := filepath.Join(paths.StateDir, repoName+".log")
+	stdoutPath := filepath.Join(paths.StateDir, repoName+".out.log")
+	stderrPath := filepath.Join(paths.StateDir, repoName+".err.log")
 
 	job := &Job{
 		Label: GetLabel(repoName),
@@ -63,9 +64,9 @@ func CreateJob(repoName string, cronExpr string, binaryPath string) (*Job, error
 			repoName,
 		},
 		StartCalendarInterval: intervals,
-		StandardOutPath:       logPath,
-		StandardErrorPath:     logPath,
-		RunAtLoad:             false,
+		StandardOutPath:       stdoutPath,
+		StandardErrorPath:     stderrPath,
+		RunAtLoad:             false, // backup only runs on schedule
 	}
 
 	return job, nil

@@ -20,7 +20,6 @@ const (
 // Paths holds standard application paths
 type Paths struct {
 	ConfigDir string
-	DataDir   string
 	StateDir  string
 	ReposDir  string
 }
