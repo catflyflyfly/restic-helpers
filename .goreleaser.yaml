@@ -30,7 +30,7 @@ builds:
 # How to package the binaries
 archives:
   - formats: [tar.gz]
-    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
 
 # Generate checksums file for verifying downloads
 checksum:
